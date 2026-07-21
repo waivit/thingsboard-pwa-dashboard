@@ -60,7 +60,9 @@ function Root() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    // Must match Vite `base` — the app is served under nonthaburi.info/pwa_app.
+    // import.meta.env.BASE_URL is '/pwa_app/'; strip the trailing slash for basename.
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
       <AuthProvider>
         <SettingsProvider>
           <Root />

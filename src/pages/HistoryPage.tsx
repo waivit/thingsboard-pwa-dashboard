@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  historyTelemetry,
-  listDevices,
-  timeseriesKeys,
-  type AuthCtx,
-  type HistoryPoint,
-} from '../api/tb'
-import type { Device } from '../api/types'
+import { historyTelemetry, listDevices, timeseriesKeys, type AuthCtx } from '../api/tb'
+import type { Device, HistoryPoint } from '../api/types'
 import { LineChart } from '../components/LineChart'
 import './HistoryPage.css'
 
