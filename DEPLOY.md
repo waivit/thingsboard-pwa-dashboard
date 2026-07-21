@@ -11,22 +11,20 @@ npm run build          # → dist/  (base path is already /pwa_app/)
 ```
 
 ## 2. Serve dist/ on :7081
-Any static server works; the one requirement is an **SPA fallback** (unknown paths →
-`index.html`) because the app uses client-side routing. Example nginx serving on 7081:
+The host runs everything else in Docker, so the static site is served the same way:
+an `nginx:alpine` container bind-mounting `dist/`, with a config that adds the one
+requirement client-side routing needs — an **SPA fallback** (unknown paths →
+`index.html`). See [nginx.pwa.conf](nginx.pwa.conf) and
+[docker-compose.pwa.yml](docker-compose.pwa.yml).
 
-```nginx
-server {
-    listen 7081;
-    root /var/www/pwa_app;          # copy dist/* here
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
 ```bash
-sudo mkdir -p /var/www/pwa_app
-sudo cp -r dist/* /var/www/pwa_app/
+npm ci && npm run build     # produces dist/
+docker compose -f docker-compose.pwa.yml up -d
 ```
+
+The container mounts `./dist` read-only, so subsequent deploys just rebuild `dist/` and
+the running container picks up the new files immediately — no restart needed
+(`deploy.sh` does exactly this).
 
 ## 3. Kong route
 ```bash
