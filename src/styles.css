@@ -1,0 +1,145 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  border-inline: 1px solid var(--border);
+}
+
+.app-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.page {
+  padding: 0 0 24px;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 8px;
+}
+
+.page-head h1 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.err-title {
+  color: var(--err);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.retry {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 700;
+}
+
+.cards {
+  padding: 4px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.device-card {
+  text-align: left;
+  background: var(--card);
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  color: var(--text);
+}
+
+.dc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dc-name {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.dc-type {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.dc-muted {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.dc-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.dc-value {
+  min-width: 88px;
+}
+
+.dc-vkey {
+  color: #8a97a6;
+  font-size: 11px;
+}
+
+.dc-vnum {
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.dim {
+  opacity: 0.4;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.ok {
+  background: var(--ok);
+}
+.dot.muted {
+  background: var(--muted);
+}
+.dot.err {
+  background: var(--err);
+}
+.dot.warn {
+  background: var(--warn);
+}

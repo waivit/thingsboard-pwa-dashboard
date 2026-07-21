@@ -1,0 +1,50 @@
+:root {
+  --bg: #0b0f14;
+  --card: #141a21;
+  --border: #262630;
+  --text: #e8eef5;
+  --muted: #6b7a8c;
+  --sub: #9aabb8;
+  --accent: #4ea1ff;
+  --ok: #7bc96f;
+  --warn: #e6b84f;
+  --err: #ff6b6b;
+
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
