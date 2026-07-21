@@ -1,8 +1,9 @@
 # Deploy — dashboard-pwa
 
 Static PWA served **same-origin** as ThingsBoard at `nonthaburi.info/pwa_app` (its own
-Kong service on port 7081). Same-origin means the app's `/api/...` calls hit the existing
-ThingsBoard route directly — **no CORS**.
+Kong service). Same-origin means the app's `/api/...` calls hit the existing ThingsBoard
+route directly — **no CORS**. The container is **not published to the host** — Kong reaches
+it over the internal Docker network (`kongapi_default`), so nothing is exposed outside Kong.
 
 ## 1. Build & serve (Docker)
 The host runs everything in Docker — no Node/npm needed on the host at all. A
@@ -15,8 +16,9 @@ output into an `nginx:alpine` image with an **SPA fallback** config (unknown pat
 docker compose -f docker-compose.pwa.yml up -d --build
 ```
 
-This builds the image fresh each deploy and (re)starts the `pwa-app` container on
-`:7081` — `deploy.sh` does exactly this after `git pull`.
+This builds the image fresh each deploy and (re)starts the `pwa-app` container, joined to
+Kong's `kongapi_default` network with no host port published — `deploy.sh` does exactly
+this after `git pull`.
 
 ## 2. Kong route
 ```bash
@@ -24,9 +26,10 @@ This builds the image fresh each deploy and (re)starts the `pwa-app` container o
 # publishes it as 32768, not the default 8001).
 ADMIN=http://localhost:32768
 
-# service → the static server above
+# service → the pwa-app container, reached by name over the kongapi_default network
+# (port 80 = nginx inside the container; the container publishes no host port)
 curl -s -X POST $ADMIN/services \
-  -d name=pwa-app -d url=http://127.0.0.1:7081
+  -d name=pwa-app -d url=http://pwa-app:80
 
 # route: nonthaburi.info/pwa_app → pwa-app  (DO NOT strip — the app expects /pwa_app/*)
 curl -s -X POST $ADMIN/services/pwa-app/routes \
