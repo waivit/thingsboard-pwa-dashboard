@@ -1,0 +1,46 @@
+.detail-head {
+  justify-content: space-between;
+}
+
+.back {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.value-table {
+  padding: 8px 20px 0;
+}
+
+.value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.vr-key {
+  color: #c8c8d0;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.vr-val {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stale-note {
+  color: var(--warn);
+  font-size: 12px;
+  text-align: center;
+  margin-top: 16px;
+}

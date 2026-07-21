@@ -1,43 +1,45 @@
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
-import { SettingsProvider } from './settings/SettingsContext'
+import { SettingsProvider, useSettings } from './settings/SettingsContext'
+import { listAlarms } from './api/tb'
+import { usePoll } from './hooks/usePoll'
 import { LoginPage } from './pages/LoginPage'
 import { DevicesPage } from './pages/DevicesPage'
+import { DeviceDetailPage } from './pages/DeviceDetailPage'
+import { AlarmsPage } from './pages/AlarmsPage'
+import { HistoryPage } from './pages/HistoryPage'
+import { SettingsPage } from './pages/SettingsPage'
 import { BottomNav } from './components/BottomNav'
 import './styles.css'
 
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div className="page">
-      <header className="page-head">
-        <h1>{title}</h1>
-      </header>
-      <div className="center muted">กำลังจะมา (W2)</div>
-    </div>
-  )
-}
-
-// The signed-in shell: routed tab content + a persistent bottom nav.
+// The signed-in shell: routed tab content + a persistent bottom nav. Alarms are polled
+// here (not inside the Alarms tab) so the tab badge stays live on every screen.
 function AppShell() {
   const { apiCtx, signOut } = useAuth()
+  const { pollMs } = useSettings()
   const nav = useNavigate()
   const onAuthError = () => {
     signOut()
     nav('/login')
   }
 
+  const alarms = usePoll(() => listAlarms(apiCtx), pollMs, onAuthError)
+  const alarmList = alarms.data ?? []
+  const alarmCount = alarms.status === 'ok' ? alarmList.length : 0
+
   return (
     <div className="app-shell">
       <div className="app-body">
         <Routes>
           <Route path="/devices" element={<DevicesPage ctx={apiCtx} onAuthError={onAuthError} />} />
-          <Route path="/alarms" element={<Placeholder title="แจ้งเตือน" />} />
-          <Route path="/history" element={<Placeholder title="กราฟย้อนหลัง" />} />
-          <Route path="/settings" element={<Placeholder title="ตั้งค่า" />} />
+          <Route path="/devices/:id" element={<DeviceDetailPage ctx={apiCtx} onAuthError={onAuthError} />} />
+          <Route path="/alarms" element={<AlarmsPage status={alarms.status} alarms={alarmList} />} />
+          <Route path="/history" element={<HistoryPage ctx={apiCtx} onAuthError={onAuthError} />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/devices" replace />} />
         </Routes>
       </div>
-      <BottomNav />
+      <BottomNav alarmCount={alarmCount} />
     </div>
   )
 }

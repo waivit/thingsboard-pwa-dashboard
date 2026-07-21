@@ -1,0 +1,59 @@
+.settings-body {
+  padding: 0 20px 24px;
+}
+
+.s-section {
+  color: #8a97a6;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 20px 0 8px;
+}
+
+.s-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 0 14px;
+}
+
+.s-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.s-row:last-child {
+  border-bottom: none;
+}
+
+.s-label {
+  color: var(--sub);
+  font-size: 14px;
+}
+
+.s-value {
+  color: var(--text);
+  font-size: 14px;
+  text-align: right;
+  word-break: break-all;
+}
+
+.logout {
+  width: 100%;
+  margin-top: 32px;
+  background: transparent;
+  border: 1px solid var(--err);
+  color: var(--err);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.s-version {
+  color: #556;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+}

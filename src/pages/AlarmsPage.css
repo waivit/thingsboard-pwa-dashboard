@@ -1,0 +1,62 @@
+.alarm-list {
+  padding: 4px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alarm-card {
+  display: flex;
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.alarm-stripe {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+.alarm-body {
+  flex: 1;
+  padding: 14px;
+}
+
+.alarm-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alarm-type {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.alarm-sev {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.alarm-origin {
+  color: var(--sub);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.alarm-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.alarm-time {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.alarm-ack {
+  color: #8a97a6;
+  font-size: 12px;
+}
