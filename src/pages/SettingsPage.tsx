@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { decodeClaims } from '../api/tb'
 import { useSettings, POLL_OPTIONS } from '../settings/SettingsContext'
+import { currentSubscription, disablePush, enablePush, pushSupported } from '../push/webpush'
 import './SettingsPage.css'
 
 export function SettingsPage() {
@@ -8,6 +10,29 @@ export function SettingsPage() {
   const { pollMs, setPollMs } = useSettings()
   const claims = decodeClaims(token)
   const role = claims.scopes?.join(', ') ?? '–'
+
+  const [pushOn, setPushOn] = useState(false)
+  const [pushBusy, setPushBusy] = useState(false)
+  const [pushError, setPushError] = useState<string | null>(null)
+
+  useEffect(() => {
+    void currentSubscription().then((s) => setPushOn(!!s))
+  }, [])
+
+  const togglePush = async (on: boolean) => {
+    if (pushBusy) return
+    setPushError(null)
+    setPushBusy(true)
+    if (on) {
+      const err = await enablePush()
+      if (err) setPushError(err)
+      else setPushOn(true)
+    } else {
+      await disablePush()
+      setPushOn(false)
+    }
+    setPushBusy(false)
+  }
 
   return (
     <div className="page">
@@ -36,6 +61,24 @@ export function SettingsPage() {
             </button>
           ))}
         </div>
+
+        <div className="s-section">การแจ้งเตือน (push)</div>
+        <div className="s-card">
+          <div className="s-row switch-row">
+            <span className="s-label">แจ้งเตือนเมื่อมี alarm</span>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={pushOn}
+                disabled={pushBusy || !pushSupported()}
+                onChange={(e) => void togglePush(e.target.checked)}
+              />
+              <span className="slider" />
+            </label>
+          </div>
+        </div>
+        {pushError && <div className="s-push-err">{pushError}</div>}
+        {!pushSupported() && <div className="s-push-note">เบราว์เซอร์นี้ไม่รองรับ push</div>}
 
         <button className="logout" onClick={signOut}>
           ออกจากระบบ

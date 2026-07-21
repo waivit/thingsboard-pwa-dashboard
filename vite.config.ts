@@ -15,8 +15,15 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // injectManifest: our own src/sw.ts (Workbox precache + Web Push handlers).
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       includeAssets: ['pwa-icon.svg', 'maskable-icon.svg'],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,svg}'],
+      },
       manifest: {
         name: 'Nonthaburi IoT',
         short_name: 'Nonthaburi',
@@ -34,21 +41,10 @@ export default defineConfig({
           { src: 'maskable-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
         ],
       },
-      workbox: {
-        // Precache the app shell (built JS/CSS/HTML). Never cache the API — telemetry and
-        // alarms must always hit the network.
-        navigateFallback: `${BASE}index.html`,
-        navigateFallbackDenylist: [/^\/api/],
-        runtimeCaching: [
-          {
-            urlPattern: /^\/api\//,
-            handler: 'NetworkOnly',
-          },
-        ],
-      },
       devOptions: {
         // Enable the service worker in dev so W3/W4 are testable on localhost.
         enabled: true,
+        type: 'module', // dev SW is TS/ESM (injectManifest)
       },
     }),
   ],
