@@ -8,8 +8,10 @@ it over the internal Docker network (`kongapi_default`), so nothing is exposed o
 ## 1. Build & serve (Docker)
 The host runs everything in Docker — no Node/npm needed on the host at all. A
 multi-stage [Dockerfile](Dockerfile) builds the app (`node:24-alpine`) and copies the
-output into an `nginx:alpine` image with an **SPA fallback** config (unknown paths →
-`index.html`, required for client-side routing). See [nginx.pwa.conf](nginx.pwa.conf) and
+output into an `nginx:alpine` image **under `/pwa_app/`** so the on-disk paths match the
+URL paths exactly (files live at `.../html/pwa_app/...`, same as the `/pwa_app/` base the
+app is built with). nginx adds an **SPA fallback** (unknown `/pwa_app/*` → `/pwa_app/
+index.html`) plus cache headers. See [nginx.pwa.conf](nginx.pwa.conf) and
 [docker-compose.pwa.yml](docker-compose.pwa.yml).
 
 ```bash
@@ -37,8 +39,14 @@ curl -s -X POST $ADMIN/services/pwa-app/routes \
 ```
 
 > `strip_path=false` here (unlike the alarm-push route): the built assets reference
-> `/pwa_app/assets/...`, so Kong must forward the prefix. The static server's `root`
-> serves those because `dist` was built with `base: /pwa_app/`.
+> `/pwa_app/assets/...`, so Kong forwards the full prefix and nginx serves the matching
+> files under `.../html/pwa_app/`. Because the paths line up at every layer, the app also
+> works when hit directly (e.g. `http://<host>:7081/pwa_app/`), not only through Kong.
+
+> **CDN note:** `nonthaburi.info` sits behind Cloudflare. After a deploy, Cloudflare may
+> keep serving a stale copy of the app shell / `registerSW.js` (symptom: white page,
+> `registerSW.js` returns HTML). The `no-cache` headers above tell it not to pin those,
+> but an already-cached entry must be **purged in Cloudflare** to take effect immediately.
 
 ## 3. Verify
 - Open `https://nonthaburi.info/pwa_app` on a phone → login works (same-origin API).
