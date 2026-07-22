@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { decodeClaims } from '../api/tb'
-import { useSettings, POLL_OPTIONS } from '../settings/SettingsContext'
+import { useSettings, POLL_OPTIONS, THEME_OPTIONS, type Theme } from '../settings/SettingsContext'
 import { currentSubscription, disablePush, enablePush, pushSupported } from '../push/webpush'
 import './SettingsPage.css'
 
+const THEME_LABEL: Record<Theme, string> = {
+  system: 'ตามระบบ',
+  light: 'สว่าง',
+  dark: 'มืด',
+}
+
 export function SettingsPage() {
   const { token, signOut } = useAuth()
-  const { pollMs, setPollMs } = useSettings()
+  const { pollMs, setPollMs, theme, setTheme } = useSettings()
   const claims = decodeClaims(token)
   const role = claims.scopes?.join(', ') ?? '–'
 
@@ -51,6 +57,15 @@ export function SettingsPage() {
             <span className="s-label">สิทธิ์</span>
             <span className="s-value">{role}</span>
           </div>
+        </div>
+
+        <div className="s-section">ธีม</div>
+        <div className="chip-row">
+          {THEME_OPTIONS.map((t) => (
+            <button key={t} className={`chip${t === theme ? ' on' : ''}`} onClick={() => setTheme(t)}>
+              {THEME_LABEL[t]}
+            </button>
+          ))}
         </div>
 
         <div className="s-section">รอบดึงข้อมูล (poll)</div>

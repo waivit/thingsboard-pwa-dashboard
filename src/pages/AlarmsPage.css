@@ -57,6 +57,6 @@
 }
 
 .alarm-ack {
-  color: #8a97a6;
+  color: var(--label);
   font-size: 12px;
 }

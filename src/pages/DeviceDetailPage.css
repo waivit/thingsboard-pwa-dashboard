@@ -25,7 +25,7 @@
 }
 
 .vr-key {
-  color: #c8c8d0;
+  color: var(--sub);
   font-size: 14px;
   word-break: break-word;
 }

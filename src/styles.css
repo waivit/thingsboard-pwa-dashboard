@@ -60,6 +60,41 @@
   font-weight: 700;
 }
 
+/* Chips — shared by the history page (keys/ranges) and settings (theme, poll rate). */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-row.scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.chip {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: transparent;
+  color: var(--sub);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+}
+
 .cards {
   padding: 4px 20px;
   display: flex;
@@ -111,7 +146,7 @@
 }
 
 .dc-vkey {
-  color: #8a97a6;
+  color: var(--label);
   font-size: 11px;
 }
 

@@ -1,7 +1,7 @@
 .bottom-nav {
   display: flex;
   border-top: 1px solid var(--border);
-  background: #0e141a;
+  background: var(--nav-bg);
   padding: 8px 0 max(8px, env(safe-area-inset-bottom));
 }
 

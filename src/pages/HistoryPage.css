@@ -11,44 +11,10 @@
 }
 
 .hist-label {
-  color: #8a97a6;
+  color: var(--label);
   font-size: 13px;
   font-weight: 700;
   margin: 16px 0 8px;
-}
-
-.chip-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip-row.scroll {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.chip {
-  flex-shrink: 0;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: transparent;
-  color: var(--sub);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 7px 14px;
-  max-width: 220px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chip.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #0b0f14;
-  font-weight: 800;
 }
 
 .chart-box {

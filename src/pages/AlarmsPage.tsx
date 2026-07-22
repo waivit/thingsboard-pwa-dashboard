@@ -2,12 +2,14 @@ import type { AlarmInfo, AlarmSeverity } from '../api/types'
 import type { PollStatus } from '../hooks/usePoll'
 import './AlarmsPage.css'
 
+// Themed in index.css — the light palette darkens the amber/orange ones so they
+// stay readable on a white card.
 const SEVERITY_COLOR: Record<AlarmSeverity, string> = {
-  CRITICAL: '#ff5252',
-  MAJOR: '#ff9800',
-  MINOR: '#ffc107',
-  WARNING: '#e6b84f',
-  INDETERMINATE: '#8a97a6',
+  CRITICAL: 'var(--sev-critical)',
+  MAJOR: 'var(--sev-major)',
+  MINOR: 'var(--sev-minor)',
+  WARNING: 'var(--sev-warning)',
+  INDETERMINATE: 'var(--sev-indeterminate)',
 }
 const SEVERITY_LABEL: Record<AlarmSeverity, string> = {
   CRITICAL: 'วิกฤต',
@@ -47,7 +49,7 @@ export function AlarmsPage({ status, alarms }: Props) {
       ) : (
         <div className="alarm-list">
           {alarms.map((a) => {
-            const color = SEVERITY_COLOR[a.severity] ?? '#8a97a6'
+            const color = SEVERITY_COLOR[a.severity] ?? 'var(--sev-indeterminate)'
             return (
               <div key={a.id.id} className="alarm-card">
                 <span className="alarm-stripe" style={{ background: color }} />

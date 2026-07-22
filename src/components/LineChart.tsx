@@ -1,4 +1,5 @@
 import type { HistoryPoint } from '../api/types'
+import './LineChart.css'
 
 interface Props {
   points: HistoryPoint[]
@@ -50,22 +51,29 @@ export function LineChart({ points, width, height = 220 }: Props) {
 
   return (
     <svg width={width} height={height}>
-      <line x1={PAD_L} y1={PAD_T} x2={PAD_L} y2={PAD_T + plotH} stroke="#262630" strokeWidth={1} />
-      <line x1={PAD_L} y1={PAD_T + plotH} x2={PAD_L + plotW} y2={PAD_T + plotH} stroke="#262630" strokeWidth={1} />
-      <text x={PAD_L - 6} y={PAD_T + 4} fill="#6b7a8c" fontSize={10} textAnchor="end">
+      <line className="lc-axis" x1={PAD_L} y1={PAD_T} x2={PAD_L} y2={PAD_T + plotH} strokeWidth={1} />
+      <line
+        className="lc-axis"
+        x1={PAD_L}
+        y1={PAD_T + plotH}
+        x2={PAD_L + plotW}
+        y2={PAD_T + plotH}
+        strokeWidth={1}
+      />
+      <text className="lc-label" x={PAD_L - 6} y={PAD_T + 4} fontSize={10} textAnchor="end">
         {fmtNum(max)}
       </text>
-      <text x={PAD_L - 6} y={PAD_T + plotH} fill="#6b7a8c" fontSize={10} textAnchor="end">
+      <text className="lc-label" x={PAD_L - 6} y={PAD_T + plotH} fontSize={10} textAnchor="end">
         {fmtNum(min)}
       </text>
-      <text x={PAD_L} y={height - 6} fill="#6b7a8c" fontSize={10} textAnchor="start">
+      <text className="lc-label" x={PAD_L} y={height - 6} fontSize={10} textAnchor="start">
         {fmtTime(t0)}
       </text>
-      <text x={PAD_L + plotW} y={height - 6} fill="#6b7a8c" fontSize={10} textAnchor="end">
+      <text className="lc-label" x={PAD_L + plotW} y={height - 6} fontSize={10} textAnchor="end">
         {fmtTime(t1)}
       </text>
-      <polyline points={poly} fill="none" stroke="#4ea1ff" strokeWidth={2} />
-      <circle cx={x(last.ts)} cy={y(last.value)} r={3.5} fill="#4ea1ff" />
+      <polyline className="lc-line" points={poly} fill="none" strokeWidth={2} />
+      <circle className="lc-dot" cx={x(last.ts)} cy={y(last.value)} r={3.5} />
     </svg>
   )
 }

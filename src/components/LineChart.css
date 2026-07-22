@@ -1,0 +1,16 @@
+/* SVG presentation attributes can't take var(), so the chart is themed from here. */
+.lc-axis {
+  stroke: var(--border);
+}
+
+.lc-label {
+  fill: var(--muted);
+}
+
+.lc-line {
+  stroke: var(--accent);
+}
+
+.lc-dot {
+  fill: var(--accent);
+}

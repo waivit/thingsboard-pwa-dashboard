@@ -1,17 +1,62 @@
+/* Theme tokens. The active theme is set as data-theme on <html> — by the pre-paint
+   script in index.html on load, then by SettingsContext when the user changes it. */
 :root {
+  /* Dark is the base palette, not a [data-theme='dark'] block: if the pre-paint
+     script never runs the app still renders with a complete set of colors. */
   --bg: #0b0f14;
   --card: #141a21;
+  --nav-bg: #0e141a;
   --border: #262630;
   --text: #e8eef5;
-  --muted: #6b7a8c;
   --sub: #9aabb8;
+  --label: #8a97a6;
+  --muted: #6b7a8c;
   --accent: #4ea1ff;
+  --on-accent: #0b0f14;
+  --track: #333;
+  --knob: #fff;
   --ok: #7bc96f;
   --warn: #e6b84f;
   --err: #ff6b6b;
 
+  --sev-critical: #ff5252;
+  --sev-major: #ff9800;
+  --sev-minor: #ffc107;
+  --sev-warning: #e6b84f;
+  --sev-indeterminate: #8a97a6;
+
   color-scheme: dark;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+:root[data-theme='light'] {
+  --bg: #f5f7fa;
+  --card: #fff;
+  --nav-bg: #fff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --sub: #475569;
+  --label: #64748b;
+  --muted: #64748b;
+  /* A darker blue than the dark theme's: #4ea1ff is too pale to read on white,
+     and it also has to carry white text as a button background. */
+  --accent: #2563eb;
+  --on-accent: #fff;
+  --track: #cbd5e1;
+  --knob: #fff;
+  --ok: #16a34a;
+  --warn: #b45309;
+  --err: #dc2626;
+
+  /* Amber and orange have to darken here — the dark-theme values are unreadable
+     against a white card. */
+  --sev-critical: #dc2626;
+  --sev-major: #c2410c;
+  --sev-minor: #a16207;
+  --sev-warning: #b45309;
+  --sev-indeterminate: #64748b;
+
+  color-scheme: light;
 }
 
 * {
