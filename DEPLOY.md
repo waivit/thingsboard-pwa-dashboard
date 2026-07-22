@@ -38,7 +38,7 @@ curl -s -X POST $ADMIN/services/pwa-app/routes \
   -d 'paths[]=/pwa_app' -d strip_path=false -d 'hosts[]=nonthaburi.info'
 ```
 
-> `strip_path=false` here (unlike the alarm-push route): the built assets reference
+> `strip_path=false` here (unlike the pushbridge route): the built assets reference
 > `/pwa_app/assets/...`, so Kong forwards the full prefix and nginx serves the matching
 > files under `.../html/pwa_app/`. Because the paths line up at every layer, the app also
 > works when hit directly (e.g. `http://<host>:7081/pwa_app/`), not only through Kong.
@@ -51,12 +51,12 @@ curl -s -X POST $ADMIN/services/pwa-app/routes \
 ## 3. Verify
 - Open `https://nonthaburi.info/pwa_app` on a phone → login works (same-origin API).
 - Browser install prompt appears (HTTPS + manifest + SW) → **Add to Home Screen**.
-- Settings → toggle **แจ้งเตือน (push)** on → allow → it registers with alarm-push.
+- Settings → toggle **แจ้งเตือน (push)** on → allow → it registers with pushbridge.
 - Trigger a new alarm in ThingsBoard → push arrives even with the PWA closed
   (Android always; iOS 16.4+ only when installed to the home screen).
 
 ## Notes
 - HTTPS is mandatory for the service worker + Web Push. `nonthaburi.info` already has TLS
   (Kong), so serving under it satisfies this — plain-IP/HTTP won't register the SW.
-- The push backend (`../alarm-push`) must be deployed and routed at `/pwa_push` for the
-  notification toggle to work.
+- The push backend (`../pushbridge`) must be deployed and routed at `/pwa_pushbridge` for
+  the notification toggle to work.

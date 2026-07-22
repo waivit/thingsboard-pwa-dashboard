@@ -1,7 +1,8 @@
-// Web Push subscription client. Talks to the alarm-push backend, which is routed
-// same-origin under /pwa_push (Kong → the Python service). The backend owns the VAPID
-// keypair; we fetch its public key at runtime so no rebuild is needed when keys change.
-const PUSH_API = '/pwa_push'
+// Web Push subscription client. Talks to the pushbridge backend, which is routed
+// same-origin under /pwa_pushbridge (Kong → the Python service). The backend owns the
+// VAPID keypair; we fetch its public key at runtime so no rebuild is needed when keys
+// change.
+const PUSH_API = '/pwa_pushbridge'
 
 export function pushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window

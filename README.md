@@ -35,7 +35,7 @@ building a real PWA:
   gateway as the ThingsBoard instance it talks to (`/api/...` relative paths), sidestepping
   CORS entirely instead of papering over it — see [DEPLOY.md](DEPLOY.md).
 - **CI/CD included**: GitHub Actions builds and lints on every push/PR, and auto-deploys
-  to the production host over SSH on merge to `master` (`.github/workflows/`,
+  to the production host over SSH on merge to `main` (`.github/workflows/`,
   `deploy.sh`).
 - Small, readable codebase: React 19 + TypeScript, no state-management library, no CSS
   framework — just enough structure to stay maintainable (`src/api`, `src/auth`,
@@ -75,7 +75,7 @@ set directly in `vite.config.ts`.
 See [DEPLOY.md](DEPLOY.md) for the full production setup (nginx, Kong routing, HTTPS/
 service-worker requirements). In short: `npm run build` produces a static `dist/` that
 is served same-origin with ThingsBoard so the app's API calls need no CORS handling.
-Pushing to `master` triggers the GitHub Actions workflow in
+Pushing to `main` triggers the GitHub Actions workflow in
 [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which builds and publishes
 the app automatically.
 

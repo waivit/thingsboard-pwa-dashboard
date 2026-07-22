@@ -20,7 +20,7 @@ self.addEventListener('activate', (event) => {
 })
 
 // --- Web Push ---
-// The backend (alarm-push) sends JSON: { title, body, url, tag }.
+// The backend (pushbridge) sends JSON: { title, body, url, tag }.
 interface PushPayload {
   title?: string
   body?: string
