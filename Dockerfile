@@ -1,5 +1,7 @@
 FROM node:24-alpine AS build
 WORKDIR /app
+ARG COMMIT_SHA=dev
+ENV VITE_COMMIT_SHA=$COMMIT_SHA
 COPY package*.json ./
 RUN npm ci
 COPY . .

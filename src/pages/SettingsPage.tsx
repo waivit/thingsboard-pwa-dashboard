@@ -98,7 +98,7 @@ export function SettingsPage() {
         <button className="logout" onClick={signOut}>
           ออกจากระบบ
         </button>
-        <div className="s-version">เวอร์ชัน 1.0.0 (web)</div>
+        <div className="s-version">เวอร์ชัน {import.meta.env.VITE_COMMIT_SHA ?? 'dev'}</div>
       </div>
     </div>
   )

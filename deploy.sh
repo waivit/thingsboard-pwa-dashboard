@@ -8,7 +8,8 @@ echo "[deploy] Pulling latest code..."
 cd "$DEPLOY_DIR"
 git pull origin main
 
-echo "[deploy] Building and publishing via docker compose..."
+export COMMIT_SHA=$(git rev-parse --short HEAD)
+echo "[deploy] Building and publishing via docker compose ($COMMIT_SHA)..."
 docker compose -f docker-compose.pwa.yml up -d --build
 
 echo "[deploy] Done."

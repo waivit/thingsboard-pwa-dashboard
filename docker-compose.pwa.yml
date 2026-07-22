@@ -1,6 +1,9 @@
 services:
   pwa-app:
-    build: .
+    build:
+      context: .
+      args:
+        COMMIT_SHA: ${COMMIT_SHA:-unknown}
     container_name: pwa-app
     restart: unless-stopped
     networks:
