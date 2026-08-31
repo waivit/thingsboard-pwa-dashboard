@@ -19,7 +19,11 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
-      registerType: 'autoUpdate',
+      // 'prompt', not 'autoUpdate': a new worker waits until the user taps the update
+      // toast, so a refresh never interrupts someone mid-task. src/pwa/useUpdatePrompt.ts
+      // does the registering, hence injectRegister: false (no generated registerSW.js).
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['pwa-icon.svg', 'maskable-icon.svg'],
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg}'],

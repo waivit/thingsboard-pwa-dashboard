@@ -11,9 +11,11 @@ precacheAndRoute(self.__WB_MANIFEST)
 const handler = createHandlerBoundToURL(`${import.meta.env.BASE_URL}index.html`)
 registerRoute(new NavigationRoute(handler, { denylist: [/^\/api/] }))
 
-// Apply updates immediately (paired with registerType 'autoUpdate').
-self.addEventListener('install', () => {
-  void self.skipWaiting()
+// Paired with registerType 'prompt': a new worker installs but stays in `waiting` until
+// the user taps the update toast, which posts SKIP_WAITING. Claiming clients on activate
+// then lets the page reload straight onto the new precache.
+self.addEventListener('message', (event) => {
+  if ((event.data as { type?: string } | null)?.type === 'SKIP_WAITING') void self.skipWaiting()
 })
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim())

@@ -10,6 +10,7 @@ import { AlarmsPage } from './pages/AlarmsPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { BottomNav } from './components/BottomNav'
+import { UpdateToast } from './components/UpdateToast'
 import './styles.css'
 
 // The signed-in shell: routed tab content + a persistent bottom nav. Alarms are polled
@@ -66,6 +67,8 @@ export default function App() {
       <AuthProvider>
         <SettingsProvider>
           <Root />
+          {/* Outside Root so the update offer survives sign-in/sign-out. */}
+          <UpdateToast />
         </SettingsProvider>
       </AuthProvider>
     </BrowserRouter>
