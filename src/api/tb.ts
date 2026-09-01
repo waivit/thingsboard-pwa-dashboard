@@ -90,6 +90,34 @@ async function authGet<T>(ctx: AuthCtx, path: string): Promise<ApiResult<T>> {
   }
 }
 
+// Same refresh-and-retry-once contract as authGet, for endpoints that act rather than
+// read: ThingsBoard answers these with 200 and an empty body, so nothing is parsed.
+async function authPostVoid(ctx: AuthCtx, path: string): Promise<ApiResult<void>> {
+  const call = (token: string) =>
+    timedFetch(`${BASE}${path}`, { method: 'POST', headers: { 'X-Authorization': `Bearer ${token}` } })
+  try {
+    let res = await call(ctx.getToken())
+    if (res.status === 401) {
+      const r = await refresh(ctx.getRefreshToken())
+      if (r.kind !== 'ok') return { kind: 'auth_error', message: 'ต้องเข้าสู่ระบบใหม่' }
+      ctx.onRefreshed(r.data)
+      res = await call(r.data.token)
+      if (res.status === 401) return { kind: 'auth_error', message: 'ต้องเข้าสู่ระบบใหม่' }
+    }
+    // Not an auth_error: the session is fine, this user just may not write alarms.
+    // Signing them out over it would be wrong.
+    if (res.status === 403) return { kind: 'error', message: 'ไม่มีสิทธิ์รับทราบการแจ้งเตือน' }
+    if (!res.ok) return { kind: 'error', message: `HTTP ${res.status}` }
+    return { kind: 'ok', data: undefined }
+  } catch (e) {
+    return { kind: 'error', message: String(e) }
+  }
+}
+
+export async function ackAlarm(ctx: AuthCtx, alarmId: string): Promise<ApiResult<void>> {
+  return authPostVoid(ctx, `/api/alarm/${alarmId}/ack`)
+}
+
 export async function listDevices(ctx: AuthCtx): Promise<ApiResult<Device[]>> {
   const claims = decodeClaims(ctx.getToken())
   const isTenant = claims.scopes?.includes('TENANT_ADMIN')

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { ackAlarm, type AuthCtx } from '../api/tb'
 import type { AlarmInfo, AlarmSeverity } from '../api/types'
 import type { PollStatus } from '../hooks/usePoll'
 import './AlarmsPage.css'
@@ -31,10 +33,33 @@ function fmtTime(ts: number): string {
 interface Props {
   status: PollStatus
   alarms: AlarmInfo[]
+  ctx: AuthCtx
+  /** Re-run the shell's alarm poll so the card and the tab badge reflect the ack. */
+  onAcked: () => void
+  onAuthError: () => void
 }
 
-// Alarms are polled at the app shell (so the tab badge stays live); this page just renders.
-export function AlarmsPage({ status, alarms }: Props) {
+// Alarms are polled at the app shell (so the tab badge stays live); this page renders
+// them and can acknowledge one.
+export function AlarmsPage({ status, alarms, ctx, onAcked, onAuthError }: Props) {
+  // Keyed by alarm id — several can be in flight at once.
+  const [pending, setPending] = useState<Record<string, boolean>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const onAck = async (id: string) => {
+    setPending((p) => ({ ...p, [id]: true }))
+    setErrors(({ [id]: _dropped, ...rest }) => rest)
+    const res = await ackAlarm(ctx, id)
+    setPending(({ [id]: _done, ...rest }) => rest)
+    if (res.kind === 'auth_error') {
+      onAuthError()
+    } else if (res.kind === 'error') {
+      setErrors((e) => ({ ...e, [id]: res.message }))
+    } else {
+      onAcked()
+    }
+  }
+
   return (
     <div className="page">
       <header className="page-head">
@@ -63,8 +88,19 @@ export function AlarmsPage({ status, alarms }: Props) {
                   <div className="alarm-origin">{a.originatorName}</div>
                   <div className="alarm-bottom">
                     <span className="alarm-time tnum">{fmtTime(a.startTs || a.createdTime)}</span>
-                    <span className="alarm-ack">{a.acknowledged ? 'รับทราบแล้ว' : 'ยังไม่รับทราบ'}</span>
+                    {a.acknowledged ? (
+                      <span className="alarm-ack">รับทราบแล้ว</span>
+                    ) : (
+                      <button
+                        className="alarm-ack-btn"
+                        onClick={() => void onAck(a.id.id)}
+                        disabled={pending[a.id.id]}
+                      >
+                        {pending[a.id.id] ? 'กำลังส่ง...' : 'รับทราบ'}
+                      </button>
+                    )}
                   </div>
+                  {errors[a.id.id] && <div className="alarm-err">{errors[a.id.id]}</div>}
                 </div>
               </div>
             )

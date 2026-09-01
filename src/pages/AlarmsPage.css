@@ -60,3 +60,26 @@
   color: var(--label);
   font-size: 12px;
 }
+
+.alarm-ack-btn {
+  /* Sits inline with the timestamp, so keep it compact and give it a real tap target. */
+  padding: 5px 12px;
+  margin: -4px 0;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.alarm-ack-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.alarm-err {
+  margin-top: 8px;
+  color: var(--err);
+  font-size: 12px;
+}

@@ -26,7 +26,9 @@ function AppShell() {
 
   const alarms = usePoll(() => listAlarms(apiCtx), pollMs, onAuthError)
   const alarmList = alarms.data ?? []
-  const alarmCount = alarms.status === 'ok' ? alarmList.length : 0
+  // Only the unacknowledged ones are outstanding work, so the badge drops as they are
+  // acknowledged. The list keeps showing both — searchStatus=ACTIVE spans ACK and UNACK.
+  const alarmCount = alarms.status === 'ok' ? alarmList.filter((a) => !a.acknowledged).length : 0
 
   return (
     <div className="app-shell">
@@ -34,7 +36,18 @@ function AppShell() {
         <Routes>
           <Route path="/devices" element={<DevicesPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="/devices/:id" element={<DeviceDetailPage ctx={apiCtx} onAuthError={onAuthError} />} />
-          <Route path="/alarms" element={<AlarmsPage status={alarms.status} alarms={alarmList} />} />
+          <Route
+            path="/alarms"
+            element={
+              <AlarmsPage
+                status={alarms.status}
+                alarms={alarmList}
+                ctx={apiCtx}
+                onAcked={alarms.refetch}
+                onAuthError={onAuthError}
+              />
+            }
+          />
           <Route path="/history" element={<HistoryPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/devices" replace />} />
