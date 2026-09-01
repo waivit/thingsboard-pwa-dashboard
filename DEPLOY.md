@@ -58,5 +58,6 @@ curl -s -X POST $ADMIN/services/pwa-app/routes \
 ## Notes
 - HTTPS is mandatory for the service worker + Web Push. `nonthaburi.info` already has TLS
   (Kong), so serving under it satisfies this — plain-IP/HTTP won't register the SW.
-- The push backend (`../pushbridge`) must be deployed and routed at `/pwa_pushbridge` for
-  the notification toggle to work.
+- The push backend (`../pushbridge`) must be deployed and routed at `/pwa_push` (the
+  route path kept its original name when the service was renamed) for the notification
+  toggle to work.

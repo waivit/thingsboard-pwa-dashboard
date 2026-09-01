@@ -1,8 +1,15 @@
 // Web Push subscription client. Talks to the pushbridge backend, which is routed
-// same-origin under /pwa_pushbridge (Kong → the Python service). The backend owns the
-// VAPID keypair; we fetch its public key at runtime so no rebuild is needed when keys
-// change.
-const PUSH_API = '/pwa_pushbridge'
+// same-origin under /pwa_push (Kong → the Python service). The backend owns the VAPID
+// keypair; we fetch its public key at runtime so no rebuild is needed when keys change.
+//
+// The path is /pwa_push even though the service is named pushbridge — the two were
+// renamed apart. Kong's route is paths=['/pwa_push'] with strip_path=true, so it removes
+// exactly that prefix and the backend sees its root endpoints (/vapid-public-key,
+// /register, /unregister, /health). Renaming this constant alone silently breaks push:
+// a longer prefix starting with /pwa_push still matches Kong's route, so the request is
+// forwarded with only /pwa_push stripped and the backend 404s on the leftover. Change
+// the Kong route in the same breath, or not at all.
+const PUSH_API = '/pwa_push'
 
 export function pushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
