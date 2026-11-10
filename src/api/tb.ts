@@ -90,6 +90,11 @@ async function authGet<T>(ctx: AuthCtx, path: string): Promise<ApiResult<T>> {
   }
 }
 
+// Resolves the title and doubles as an access check: a 403/404 means this user cannot open it.
+export async function getDashboardInfo(ctx: AuthCtx, id: string): Promise<ApiResult<{ title: string }>> {
+  return authGet<{ title: string }>(ctx, `/api/dashboard/info/${id}`)
+}
+
 // Same refresh-and-retry-once contract as authGet, for endpoints that act rather than
 // read: ThingsBoard answers these with 200 and an empty body, so nothing is parsed.
 async function authPostVoid(ctx: AuthCtx, path: string): Promise<ApiResult<void>> {

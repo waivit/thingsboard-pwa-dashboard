@@ -1,38 +1,72 @@
-// Placeholder dashboard with static sample data — no API calls yet.
-const STATS = [
-  { label: 'อุปกรณ์ออนไลน์', value: '12' },
-  { label: 'แจ้งเตือนวันนี้', value: '3' },
-  { label: 'อุณหภูมิเฉลี่ย', value: '29.4°' },
-]
+import { useEffect, useState } from 'react'
+import { getDashboardInfo, type AuthCtx } from '../api/tb'
 
-const BARS = [40, 65, 30, 80, 55, 90, 70]
-const DAYS = ['จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส', 'อา']
+// ThingsBoard dashboards offered in this tab. Each is shown only if the signed-in user
+// can open it in ThingsBoard; access itself is still governed by ThingsBoard assignment.
+const DASHBOARD_IDS = ['44de3680-a501-11f1-8033-a3328dc62c1a', '0aefc640-3a40-11f1-b8ba-0b85bde787de']
 
-export function DashboardPage() {
+interface Dash {
+  id: string
+  title: string
+}
+
+interface Props {
+  ctx: AuthCtx
+  onAuthError: () => void
+}
+
+export function DashboardPage({ ctx, onAuthError }: Props) {
+  const [dashes, setDashes] = useState<Dash[] | null>(null)
+  const [selected, setSelected] = useState<string>('')
+
+  useEffect(() => {
+    let cancelled = false
+    void Promise.all(DASHBOARD_IDS.map((id) => getDashboardInfo(ctx, id).then((r) => ({ id, r })))).then(
+      (results) => {
+        if (cancelled) return
+        if (results.some((x) => x.r.kind === 'auth_error')) return onAuthError()
+        const ok = results.flatMap((x) => (x.r.kind === 'ok' ? [{ id: x.id, title: x.r.data.title }] : []))
+        setDashes(ok)
+        setSelected((s) => s || ok[0]?.id || '')
+      },
+    )
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (dashes === null) return <div className="center muted">กำลังโหลด...</div>
+  if (dashes.length === 0) return <div className="center muted">ไม่มีแดชบอร์ดที่เข้าถึงได้</div>
+
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ margin: '0 0 12px' }}>แดชบอร์ด</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-        {STATS.map((s) => (
-          <div key={s.label} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10 }}>
-            <div style={{ fontSize: 22, fontWeight: 800 }}>{s.value}</div>
-            <div className="muted" style={{ fontSize: 11 }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 12, marginTop: 12 }}>
-        <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>ข้อมูลตัวอย่าง 7 วัน</div>
-        <svg viewBox="0 0 140 110" width="100%" role="img" aria-label="กราฟแท่งตัวอย่าง">
-          {BARS.map((h, i) => (
-            <g key={i}>
-              <rect x={i * 20 + 4} y={95 - h} width={12} height={h} rx={2} fill="var(--accent)" />
-              <text x={i * 20 + 10} y={106} fontSize={7} textAnchor="middle" fill="var(--muted)">
-                {DAYS[i]}
-              </text>
-            </g>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {dashes.length > 1 && (
+        <div style={{ display: 'flex', gap: 6, padding: 8, overflowX: 'auto' }}>
+          {dashes.map((d) => (
+            <button
+              key={d.id}
+              onClick={() => setSelected(d.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 16,
+                border: '1px solid var(--border)',
+                background: d.id === selected ? 'var(--accent)' : 'transparent',
+                color: d.id === selected ? '#fff' : 'inherit',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {d.title}
+            </button>
           ))}
-        </svg>
-      </div>
+        </div>
+      )}
+      <iframe
+        key={selected}
+        title={dashes.find((d) => d.id === selected)?.title}
+        src={`/dashboards/${selected}?embed=true`}
+        style={{ flex: 1, width: '100%', minHeight: 0, border: 0 }}
+      />
     </div>
   )
 }

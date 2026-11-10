@@ -51,7 +51,7 @@ function AppShell() {
           />
           <Route path="/history" element={<HistoryPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<DashboardPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="*" element={<Navigate to="/devices" replace />} />
         </Routes>
       </div>
