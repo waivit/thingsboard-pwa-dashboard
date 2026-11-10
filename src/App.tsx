@@ -11,8 +11,9 @@ import { DeviceDetailPage } from './pages/DeviceDetailPage'
 import { AlarmsPage } from './pages/AlarmsPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
-import { DashboardPage, ReportPage } from './pages/DashboardPage'
-import { DASHBOARDS, REPORT_DASHBOARD_ID } from './dashboards'
+import { DashboardPage } from './pages/DashboardPage'
+import { ReportPage } from './pages/ReportPage'
+import { DASHBOARDS } from './dashboards'
 import { BottomNav } from './components/BottomNav'
 import { UpdateToast } from './components/UpdateToast'
 import './styles.css'
@@ -24,8 +25,8 @@ function AppShell() {
   const { pollMs } = useSettings()
   const nav = useNavigate()
   const { pathname } = useLocation()
-  // Visibility only; ThingsBoard keeps the report dashboard unassigned to customers.
-  const showReport = !!REPORT_DASHBOARD_ID && (decodeClaims(token).scopes ?? []).includes('TENANT_ADMIN')
+  // Visibility only; the usage device being unassigned to customers is the real guard.
+  const showReport = (decodeClaims(token).scopes ?? []).includes('TENANT_ADMIN')
 
   // First page of this session counts as an app open; every later one as a page view.
   const opened = useRef(false)
@@ -66,7 +67,7 @@ function AppShell() {
           <Route path="/history" element={<HistoryPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/d/:id" element={<DashboardPage />} />
-          {showReport && <Route path="/report" element={<ReportPage />} />}
+          {showReport && <Route path="/report" element={<ReportPage ctx={apiCtx} onAuthError={onAuthError} />} />}
           <Route path="*" element={<Navigate to={`/d/${DASHBOARDS[0].id}`} replace />} />
         </Routes>
       </div>

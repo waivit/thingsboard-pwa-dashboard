@@ -5,7 +5,7 @@ export const DASHBOARDS = [
   { id: 'a57e4400-033d-11f1-8106-e9a9e913375f', icon: '🏊', label: 'สระว่ายน้ำ' },
 ]
 
-// Usage report dashboard, shown only to tenant admins. Leave empty to hide the tab.
-// Keep it unassigned to any customer in ThingsBoard — that, not this tab, is what stops
-// other users from opening it.
-export const REPORT_DASHBOARD_ID = ''
+// The "PWA Usage" device that pushbridge's /track writes to. The report tab (tenant
+// admins only) reads it. Keep it unassigned to any customer in ThingsBoard — that, not
+// hiding the tab, is what stops other users from reading it.
+export const USAGE_DEVICE_ID = '5ca110f0-dcef-11f1-905b-a3328dc62c1a'

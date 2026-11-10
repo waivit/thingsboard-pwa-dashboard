@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { DASHBOARDS, REPORT_DASHBOARD_ID } from '../dashboards'
+import { DASHBOARDS } from '../dashboards'
 
 function TbDashboard({ id, title }: { id: string; title: string }) {
   return (
@@ -20,8 +20,4 @@ export function DashboardPage() {
   const dash = DASHBOARDS.find((d) => d.id === id)
   if (!dash) return <div className="center muted">ไม่พบหน้านี้</div>
   return <TbDashboard id={dash.id} title={dash.label} />
-}
-
-export function ReportPage() {
-  return <TbDashboard id={REPORT_DASHBOARD_ID} title="รายงานการใช้งาน" />
 }

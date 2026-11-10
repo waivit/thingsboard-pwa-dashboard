@@ -90,6 +90,52 @@ async function authGet<T>(ctx: AuthCtx, path: string): Promise<ApiResult<T>> {
   }
 }
 
+export interface UsageEvent {
+  ts: number
+  event: string
+  page: string
+  deviceId: string
+  user: string
+  ip: string
+  ua: string
+}
+
+const USAGE_KEYS = ['event', 'page', 'deviceId', 'user', 'ip', 'ua'] as const
+
+// Raw usage events of the "PWA Usage" device, newest first. Each event is stored as
+// one telemetry row per key sharing a timestamp, so the keys are joined back on ts.
+export async function usageEvents(
+  ctx: AuthCtx,
+  deviceId: string,
+  startTs: number,
+  endTs: number,
+): Promise<ApiResult<UsageEvent[]>> {
+  const q = new URLSearchParams({
+    keys: USAGE_KEYS.join(','),
+    startTs: String(startTs),
+    endTs: String(endTs),
+    limit: '10000',
+    orderBy: 'DESC',
+  })
+  const res = await authGet<Record<string, { ts: number; value: string }[]>>(
+    ctx,
+    `/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?${q}`,
+  )
+  if (res.kind !== 'ok') return res
+  const byTs = new Map<number, UsageEvent>()
+  for (const key of USAGE_KEYS) {
+    for (const { ts, value } of res.data[key] ?? []) {
+      let e = byTs.get(ts)
+      if (!e) {
+        e = { ts, event: '', page: '', deviceId: '', user: '', ip: '', ua: '' }
+        byTs.set(ts, e)
+      }
+      e[key] = String(value)
+    }
+  }
+  return { kind: 'ok', data: [...byTs.values()].sort((a, b) => b.ts - a.ts) }
+}
+
 // Resolves the title and doubles as an access check: a 403/404 means this user cannot open it.
 export async function getDashboardInfo(ctx: AuthCtx, id: string): Promise<ApiResult<{ title: string }>> {
   return authGet<{ title: string }>(ctx, `/api/dashboard/info/${id}`)
