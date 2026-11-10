@@ -25,8 +25,17 @@
   opacity: 1;
 }
 
+.bn-item {
+  min-width: 0;
+}
+
 .bn-label {
   font-size: 11px;
+  max-width: 100%;
+  padding: 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bn-item.active .bn-label {

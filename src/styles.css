@@ -82,6 +82,7 @@
   font-size: 13px;
   font-weight: 600;
   padding: 7px 14px;
+  text-decoration: none; /* chips are also used as router links */
   max-width: 220px;
   white-space: nowrap;
   overflow: hidden;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { decodeClaims } from '../api/tb'
 import { useSettings, POLL_OPTIONS, THEME_OPTIONS, type Theme } from '../settings/SettingsContext'
@@ -47,6 +48,12 @@ export function SettingsPage() {
       </header>
 
       <div className="settings-body">
+        <div className="s-section">เมนู</div>
+        <div className="chip-row">
+          <Link className="chip" to="/devices">📟 อุปกรณ์</Link>
+          <Link className="chip" to="/history">📈 กราฟ</Link>
+        </div>
+
         <div className="s-section">บัญชี</div>
         <div className="s-card">
           <div className="s-row">
