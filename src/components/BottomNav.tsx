@@ -5,19 +5,21 @@ import './BottomNav.css'
 const TABS = [
   ...DASHBOARDS.map((d) => ({ to: `/d/${d.id}`, icon: d.icon, label: d.label })),
   { to: '/alarms', icon: '🔔', label: 'แจ้งเตือน' },
-  { to: '/settings', icon: '⚙️', label: 'ตั้งค่า' },
 ]
+const REPORT_TAB = { to: '/report', icon: '📋', label: 'รายงาน' }
+const SETTINGS_TAB = { to: '/settings', icon: '⚙️', label: 'ตั้งค่า' }
 
 // Devices and history are reached from the settings tab, so keep it highlighted there.
 const SETTINGS_CHILDREN = ['/devices', '/history']
 
-export function BottomNav({ alarmCount = 0 }: { alarmCount?: number }) {
+export function BottomNav({ alarmCount = 0, showReport = false }: { alarmCount?: number; showReport?: boolean }) {
   const { pathname } = useLocation()
   const underSettings = SETTINGS_CHILDREN.some((p) => pathname.startsWith(p))
+  const tabs = [...TABS, ...(showReport ? [REPORT_TAB] : []), SETTINGS_TAB]
 
   return (
     <nav className="bottom-nav">
-      {TABS.map((t) => (
+      {tabs.map((t) => (
         <NavLink
           key={t.to}
           to={t.to}
