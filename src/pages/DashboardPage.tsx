@@ -64,7 +64,9 @@ export function DashboardPage({ ctx, onAuthError }: Props) {
       <iframe
         key={selected}
         title={dashes.find((d) => d.id === selected)?.title}
-        src={`/dashboards/${selected}?embed=true`}
+        // Singular /dashboard/ is ThingsBoard's chrome-less route: no app header or side
+        // menu, so users cannot navigate out to the rest of the ThingsBoard UI.
+        src={`/dashboard/${selected}`}
         style={{ flex: 1, width: '100%', minHeight: 0, border: 0 }}
       />
     </div>
