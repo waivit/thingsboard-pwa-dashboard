@@ -6,6 +6,7 @@ const TABS = [
   { to: '/alarms', icon: '🔔', label: 'แจ้งเตือน' },
   { to: '/history', icon: '📈', label: 'กราฟ' },
   { to: '/settings', icon: '⚙️', label: 'ตั้งค่า' },
+  { to: '/dashboard', icon: '📊', label: 'แดชบอร์ด' },
 ]
 
 export function BottomNav({ alarmCount = 0 }: { alarmCount?: number }) {

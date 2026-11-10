@@ -9,6 +9,7 @@ import { DeviceDetailPage } from './pages/DeviceDetailPage'
 import { AlarmsPage } from './pages/AlarmsPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { BottomNav } from './components/BottomNav'
 import { UpdateToast } from './components/UpdateToast'
 import './styles.css'
@@ -50,6 +51,7 @@ function AppShell() {
           />
           <Route path="/history" element={<HistoryPage ctx={apiCtx} onAuthError={onAuthError} />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="*" element={<Navigate to="/devices" replace />} />
         </Routes>
       </div>
