@@ -69,6 +69,7 @@ export function ReportPage({ ctx, onAuthError }: Props) {
   const [range, setRange] = useState<RangeKey>('7d')
   const [events, setEvents] = useState<UsageEvent[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [userFilter, setUserFilter] = useState<string>('') // '' = all users
   const days = RANGES.find((r) => r.key === range)!.days
 
   useEffect(() => {
@@ -89,7 +90,29 @@ export function ReportPage({ ctx, onAuthError }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days])
 
+  // Every user seen in the range, independent of the filter, so the chips stay put.
+  const users = useMemo(() => {
+    const m = new Map<string, { user: string; last: number; opens: number; count: number; devices: Set<string> }>()
+    for (const e of events ?? []) {
+      let u = m.get(e.user)
+      if (!u) {
+        u = { user: e.user, last: e.ts, opens: 0, count: 0, devices: new Set() }
+        m.set(e.user, u)
+      }
+      u.count++
+      if (e.event === 'open_app') u.opens++
+      u.devices.add(e.deviceId)
+    }
+    return [...m.values()].sort((a, b) => b.count - a.count)
+  }, [events])
+
+  const filtered = useMemo(
+    () => (events && userFilter ? events.filter((e) => e.user === userFilter) : events),
+    [events, userFilter],
+  )
+
   const stats = useMemo(() => {
+    const events = filtered
     if (!events) return null
     const opens = events.filter((e) => e.event === 'open_app').length
 
@@ -116,8 +139,9 @@ export function ReportPage({ ctx, onAuthError }: Props) {
       else devices.set(e.deviceId, { id: e.deviceId, last: e, count: 1 })
     }
 
-    return { opens, buckets, pages, devices: [...devices.values()] }
-  }, [events, days])
+    const userCount = new Set(events.map((e) => e.user)).size
+    return { opens, buckets, pages, devices: [...devices.values()], userCount, total: events.length }
+  }, [filtered, days])
 
   return (
     <div className="page">
@@ -136,16 +160,34 @@ export function ReportPage({ ctx, onAuthError }: Props) {
 
         {error ? (
           <div className="center muted">โหลดข้อมูลไม่ได้ ({error})</div>
-        ) : !events || !stats ? (
+        ) : !events || !filtered || !stats ? (
           <div className="center muted">กำลังโหลด...</div>
         ) : events.length === 0 ? (
           <div className="center muted">ยังไม่มีข้อมูลในช่วงนี้</div>
         ) : (
           <>
+            {users.length > 1 && (
+              <div className="chip-row">
+                <button className={`chip${userFilter === '' ? ' on' : ''}`} onClick={() => setUserFilter('')}>
+                  ทั้งหมด
+                </button>
+                {users.map((u) => (
+                  <button
+                    key={u.user}
+                    className={`chip${userFilter === u.user ? ' on' : ''}`}
+                    onClick={() => setUserFilter(u.user)}
+                  >
+                    {u.user}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="r-stats">
+              <Stat value={stats.userCount} label="ผู้ใช้" />
               <Stat value={stats.opens} label="เปิดแอป" />
               <Stat value={stats.devices.length} label="เครื่อง" />
-              <Stat value={events.length} label="ครั้งทั้งหมด" />
+              <Stat value={stats.total} label="ครั้งทั้งหมด" />
             </div>
 
             {days > 1 && (
@@ -168,6 +210,25 @@ export function ReportPage({ ctx, onAuthError }: Props) {
               ))}
             </div>
 
+            {!userFilter && (
+              <>
+                <div className="s-section">ผู้ใช้</div>
+                <div className="s-card">
+                  {users.map((u) => (
+                    <button key={u.user} className="r-row r-row-btn" onClick={() => setUserFilter(u.user)}>
+                      <div className="r-grow">
+                        <div className="r-main r-ellipsis">{u.user || '–'}</div>
+                        <div className="r-sub muted">
+                          เปิดแอป {u.opens} · {u.devices.size} เครื่อง · ล่าสุด {fmtTime(u.last)}
+                        </div>
+                      </div>
+                      <span className="r-n">{u.count}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
             <div className="s-section">เครื่องที่ใช้งาน</div>
             <div className="s-card">
               {stats.devices.map((d) => (
@@ -176,8 +237,8 @@ export function ReportPage({ ctx, onAuthError }: Props) {
                     <div className="r-main">
                       {uaLabel(d.last.ua)} <span className="muted">#{d.id.slice(0, 6)}</span>
                     </div>
-                    <div className="r-sub muted">
-                      {d.last.ip} · ล่าสุด {fmtTime(d.last.ts)}
+                    <div className="r-sub muted r-ellipsis">
+                      {d.last.user} · {d.last.ip} · ล่าสุด {fmtTime(d.last.ts)}
                     </div>
                   </div>
                   <span className="r-n">{d.count}</span>
@@ -187,15 +248,15 @@ export function ReportPage({ ctx, onAuthError }: Props) {
 
             <div className="s-section">ล่าสุด</div>
             <div className="s-card">
-              {events.slice(0, 50).map((e) => (
+              {filtered.slice(0, 50).map((e) => (
                 <div key={e.ts} className="r-row">
                   <div>
                     <div className="r-main">
                       {e.event === 'open_app' ? 'เปิดแอป · ' : ''}
                       {pageLabel(e.page)}
                     </div>
-                    <div className="r-sub muted">
-                      #{e.deviceId.slice(0, 6)} · {e.ip}
+                    <div className="r-sub muted r-ellipsis">
+                      {e.user} · #{e.deviceId.slice(0, 6)} · {e.ip}
                     </div>
                   </div>
                   <span className="r-sub muted">{fmtTime(e.ts)}</span>
