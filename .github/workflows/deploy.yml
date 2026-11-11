@@ -19,3 +19,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             bash /opt/dashboard-pwa/deploy.sh
+
+      # Push "new version" to subscribed phones, only when the head commit asks for it
+      # with [notify] — small fixes should not ping everyone.
+      - name: Announce update
+        if: contains(github.event.head_commit.message, '[notify]')
+        env:
+          ANNOUNCE_KEY: ${{ secrets.ANNOUNCE_KEY }}
+        run: |
+          curl -fsS -X POST https://nonthaburi.info/pwa_push/announce-update \
+            -H "X-Announce-Key: $ANNOUNCE_KEY"

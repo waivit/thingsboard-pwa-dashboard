@@ -9,8 +9,6 @@ interface UpdatePrompt {
   needRefresh: boolean
   /** Activate the waiting worker; the page reloads once it takes control. */
   update: () => void
-  /** Stay on the current version until the next check. */
-  dismiss: () => void
 }
 
 /**
@@ -61,6 +59,5 @@ export function useUpdatePrompt(): UpdatePrompt {
   return {
     needRefresh,
     update: () => void updateRef.current(true),
-    dismiss: () => setNeedRefresh(false),
   }
 }
