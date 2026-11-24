@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import { SettingsProvider, useSettings } from './settings/SettingsContext'
@@ -13,8 +13,9 @@ import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ReportPage } from './pages/ReportPage'
-import { DASHBOARDS } from './dashboards'
+import { HOME_PATH } from './dashboards'
 import { BottomNav } from './components/BottomNav'
+import { PushPrompt } from './components/PushPrompt'
 import { UpdateToast } from './components/UpdateToast'
 import './styles.css'
 
@@ -39,6 +40,20 @@ function AppShell() {
     signOut()
     nav('/login')
   }
+
+  // Every return to the app (switching back from another app) lands on the home tab and
+  // re-checks push. A cold start only re-checks: it already opens on the home tab, and
+  // forcing it there would break a notification that deep-links to /alarms.
+  const [resumeKey, setResumeKey] = useState(0)
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return
+      nav(HOME_PATH)
+      setResumeKey((k) => k + 1)
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [nav])
 
   const alarms = usePoll(() => listAlarms(apiCtx), pollMs, onAuthError)
   const alarmList = alarms.data ?? []
@@ -68,10 +83,11 @@ function AppShell() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/d/:id" element={<DashboardPage />} />
           {showReport && <Route path="/report" element={<ReportPage ctx={apiCtx} onAuthError={onAuthError} />} />}
-          <Route path="*" element={<Navigate to={`/d/${DASHBOARDS[0].id}`} replace />} />
+          <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
         </Routes>
       </div>
       <BottomNav alarmCount={alarmCount} showReport={showReport} />
+      <PushPrompt checkKey={resumeKey} />
     </div>
   )
 }

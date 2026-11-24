@@ -15,6 +15,36 @@ export function pushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
 }
 
+/**
+ * Where this device stands on push:
+ * - on: subscribed with permission granted
+ * - off: can be asked right now
+ * - denied: the user blocked it; the OS will not let the app ask again
+ * - install: iOS outside an installed home-screen app, where Web Push does not exist
+ * - unsupported: this browser has no Web Push at all
+ */
+export type PushStatus = 'on' | 'off' | 'denied' | 'install' | 'unsupported'
+
+function isIosBrowserTab(): boolean {
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent)
+  const standalone =
+    (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches
+  return ios && !standalone
+}
+
+export async function pushStatus(): Promise<PushStatus> {
+  if (isIosBrowserTab()) return 'install'
+  if (!pushSupported()) return 'unsupported'
+  if (Notification.permission === 'denied') return 'denied'
+  if (Notification.permission !== 'granted') return 'off'
+  try {
+    return (await currentSubscription()) ? 'on' : 'off'
+  } catch {
+    return 'off'
+  }
+}
+
 export async function currentSubscription(): Promise<PushSubscription | null> {
   if (!pushSupported()) return null
   const reg = await navigator.serviceWorker.ready

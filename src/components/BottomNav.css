@@ -1,52 +1,71 @@
-.bottom-nav {
-  display: flex;
+.bottom-nav-wrap {
+  position: relative;
   border-top: 1px solid var(--border);
   background: var(--nav-bg);
-  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 8px 12px max(10px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .bn-item {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 96px;
+  min-height: 68px;
+  padding: 6px 14px;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  color: var(--muted);
+  justify-content: center;
+  gap: 5px;
+  border-radius: 16px;
+  color: var(--sub);
   text-decoration: none;
+}
+
+.bn-item.active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
 }
 
 .bn-icon {
   position: relative;
-  font-size: 22px;
-  opacity: 0.5;
-}
-
-.bn-item.active .bn-icon {
-  opacity: 1;
-}
-
-.bn-item {
-  min-width: 0;
+  display: flex;
 }
 
 .bn-label {
-  font-size: 11px;
-  max-width: 100%;
-  padding: 0 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 15px;
   white-space: nowrap;
 }
 
 .bn-item.active .bn-label {
-  color: var(--accent);
   font-weight: 700;
+}
+
+.bn-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 36px;
+  background: linear-gradient(to right, transparent, var(--nav-bg));
+  pointer-events: none;
 }
 
 .bn-badge {
   position: absolute;
   top: -4px;
-  right: -8px;
+  right: -10px;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
